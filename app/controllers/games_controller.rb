@@ -4,23 +4,32 @@ require 'byebug'
 
 class GamesController < ApplicationController
   def new
-    @letters = ("A".."Z").to_a.sample(9)
+    @letters = ("A".."Z").to_a.sample(10)
   end
 
   def score
+    session[:totalscore] = 0 if session[:totalscore] == nil
     @answer = params[:answer].upcase
     @letters = params[:letters].split(" ")
     if validword?(@answer) == false && rightword?(@answer, @letters) == true
       @score = 0
+      session[:totalscore] += @score
+      @totalscore = session[:totalscore].to_i
       @message = "#{@answer} is not a valid English word"
     elsif rightword?(@answer, @letters) == false && validword?(@answer) == true
       @score = 0
+      session[:totalscore] += @score
+      @totalscore = session[:totalscore].to_i
       @message = "#{@answer} is not valid according to the grid"
     elsif rightword?(@answer, @letters) == false && validword?(@answer) == false
-      @score = -100
+      @score = -20
+      session[:totalscore] += @score
+      @totalscore = session[:totalscore].to_i
       @message = "#{@answer} is not valid according to the grid and is not a valid word"
     else
-      @score = 100
+      @score = @answer.length ** 2
+      session[:totalscore] += @score
+      @totalscore = session[:totalscore].to_i
       @message = "Well Done"
     end
   end
